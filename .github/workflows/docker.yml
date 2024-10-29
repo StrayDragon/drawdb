@@ -30,10 +30,15 @@ jobs:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-    
+
+    # https://github.com/orgs/community/discussions/25768#discussioncomment-8053592
+    - name: lowercase github.repository
+      run: |
+        echo "IMAGE_NAME=`echo ${{github.repository}} | tr '[:upper:]' '[:lower:]'`" >>${GITHUB_ENV}
+
     - name: Build and push
       uses: docker/build-push-action@v5
       with:
         push: true
-        tags: ghcr.io/${{ github.repository }}:latest,ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+        tags: ghcr.io/${{ env.IMAGE_NAME }}:latest # ,ghcr.io/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
         platforms: linux/amd64,linux/arm64
